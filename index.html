@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Chip-8 Editor and Compiler</title>
+</head>
+<body>
+    <div id="editor" style="height: 600px; width: 800px">foo {
+    baz = 1 // sample comment
+    bar {
+        quux = 42
+        hello = "hello \"world\"!"
+    }
+    quux = 7
+}</div>
+    <button onclick="log()">log text</button>
+    <div id="output"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ace.js" integrity="sha256-CVkji/u32aj2TeC+D13f7scFSIfphw2pmu4LaKWMSY8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tokenizr@1.5.5/lib/tokenizr.min.js"></script>
+    <script src="./opcodes.js"></script>
+    <script src="./index.js"></script>
+</body>
+</html>
