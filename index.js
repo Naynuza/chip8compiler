@@ -70,11 +70,14 @@ lexer.rule(/\}/, (ctx, match) => {
     ctx.accept("separator");
 });
 lexer.rule(/\/\/[^\r\n]*\r?\n/, (ctx, match) => {
-    ctx.ignore()
-})
+    ctx.ignore();
+});
 lexer.rule(/[ \t\r\n]+/, (ctx, match) => {
-    ctx.ignore()
-})
+    ctx.ignore();
+});
+lexer.rule(/./, (ctx, match) => {
+    ctx.accept("char");
+});
 
 function log() {
     let cfg = editor.getValue();
