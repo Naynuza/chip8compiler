@@ -12,23 +12,62 @@ let output = document.getElementById("output");
 
 let lexer = new Tokenizr();
 
-lexer.rule(/[a-zA-Z_][a-zA-Z0-9_]*/, (ctx, match) => {
-    ctx.accept("id");
+lexer.rule(/\w+/, (ctx, match) => {
+    ctx.accept("identifier");
 });
-lexer.rule(/[+-]?[0-9]+/, (ctx, match) => {
-    ctx.accept("number", parseInt(match[0]));
+lexer.rule(/\d+/, (ctx, match) => {
+    ctx.accept("numeric");
 });
-lexer.rule(/"((?:\\"|[^\r\n])*)"/, (ctx, match) => {
-    ctx.accept("string", match[1].replace(/\\"/g, "\""));
+lexer.rule(/0x[\da-fA-F]/, (ctx, match) => {
+    ctx.accept("numeric");
 });
-lexer.rule(/\/\/[^\r\n]*\r?\n/, (ctx, match) => {
-    ctx.ignore();
+lexer.rule(/0x[\da-fA-F]{2}/, (ctx, match) => {
+    ctx.accept("numeric");
 });
-lexer.rule(/[ \t\r\n]+/, (ctx, match) => {
-    ctx.ignore();
+lexer.rule(/\$[\da-fA-F]/, (ctx, match) => {
+    ctx.accept("numeric");
 });
-lexer.rule(/./, (ctx, match) => {
-    ctx.accept("char");
+lexer.rule(/\#/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\@/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\+/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\-/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\_/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\&/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\=/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\!/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/clear/, (ctx, match) => {
+    ctx.accept("keyword");
+});
+lexer.rule(/call/, (ctx, match) => {
+    ctx.accept("keyword");
+});
+lexer.rule(/return/, (ctx, match) => {
+    ctx.accept("keyword");
+});
+lexer.rule(/skip/, (ctx, match) => {
+    ctx.accept("keyword");
+});
+lexer.rule(/\{/, (ctx, match) => {
+    ctx.accept("separator");
+});
+lexer.rule(/\}/, (ctx, match) => {
+    ctx.accept("separator");
 });
 
 function log() {
