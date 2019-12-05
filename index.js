@@ -76,6 +76,7 @@ function log() {
     lexer.input(cfg);
     lexer.debug(true);
     lexer.tokens().forEach((token) => {
+        console.log(token.toString());
         outstr += (token.toString() + "\n");
     });
     output.innerText = outstr;
