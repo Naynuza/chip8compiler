@@ -12,6 +12,7 @@ let output = document.getElementById("output");
 
 let lexer = new Tokenizr();
 
+//TODO: Make the regexes more efficient
 lexer.rule(/clear/, (ctx, match) => {
     ctx.accept("keyword");
 });
