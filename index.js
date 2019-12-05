@@ -69,6 +69,12 @@ lexer.rule(/\{/, (ctx, match) => {
 lexer.rule(/\}/, (ctx, match) => {
     ctx.accept("separator");
 });
+lexer.rule(/\/\/[^\r\n]*\r?\n/, (ctx, match) => {
+    ctx.ignore()
+})
+lexer.rule(/[ \t\r\n]+/, (ctx, match) => {
+    ctx.ignore()
+})
 
 function log() {
     let cfg = editor.getValue();
