@@ -344,7 +344,7 @@ class chip8 {
             --sound_timer;
         }
 
-        console.log("Ran opcode: 0x" + opcode.toString(16) + " at address: " + pc.toString(10));
+        //console.log("Ran opcode: 0x" + opcode.toString(16) + " at address: " + pc.toString(10));
     }
     load(file) {
         this.initialize()
