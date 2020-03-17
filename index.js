@@ -41,3 +41,36 @@ function log() {
     });
     output.innerText = outstr;
 }
+
+//Code below from https://stackoverflow.com/a/14603254
+
+function parseHexString(str) {
+    let result = [];
+    while (str.length >= 2) {
+        result.push(parseInt(str.substring(0, 2), 16));
+
+        str = str.substring(2, str.length);
+    }
+
+    return result;
+}
+
+function intArrayToString(arr) {
+    let result = "";
+    let z;
+
+    for (let i = 0; i < arr.length; i++) {
+        let str = arr[i].toString(16);
+
+        z = 8 - str.length + 1;
+        str = Array(z).join("0") + str;
+
+        result += str;
+    }
+
+    return result;
+}
+
+let file = new File(parseHexString("00112233445566778899aabbccddeeff"), "test")
+console.log(file);
+
