@@ -12,14 +12,63 @@ let output = document.getElementById("output");
 
 let lexer = new Tokenizr();
 
-lexer.rule(/[a-zA-Z_][a-zA-Z0-9_]*/, (ctx, match) => {
-    ctx.accept("id");
+//TODO: Make the regexes more efficient
+lexer.rule(/clear/, (ctx, match) => {
+    ctx.accept("keyword");
 });
-lexer.rule(/[+-]?[0-9]+/, (ctx, match) => {
-    ctx.accept("number", parseInt(match[0]));
+lexer.rule(/call/, (ctx, match) => {
+    ctx.accept("keyword");
 });
-lexer.rule(/"((?:\\"|[^\r\n])*)"/, (ctx, match) => {
-    ctx.accept("string", match[1].replace(/\\"/g, "\""));
+lexer.rule(/return/, (ctx, match) => {
+    ctx.accept("keyword");
+});
+lexer.rule(/skip/, (ctx, match) => {
+    ctx.accept("keyword");
+});
+lexer.rule(/\w+/, (ctx, match) => {
+    ctx.accept("identifier");
+});
+lexer.rule(/\d+/, (ctx, match) => {
+    ctx.accept("numeric");
+});
+lexer.rule(/0x[\da-fA-F]/, (ctx, match) => {
+    ctx.accept("numeric");
+});
+lexer.rule(/0x[\da-fA-F]{2}/, (ctx, match) => {
+    ctx.accept("numeric");
+});
+lexer.rule(/\$[\da-fA-F]/, (ctx, match) => {
+    ctx.accept("numeric");
+});
+lexer.rule(/\#/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\@/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\+/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\-/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\_/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\&/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\=/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\!/, (ctx, match) => {
+    ctx.accept("operator");
+});
+lexer.rule(/\{/, (ctx, match) => {
+    ctx.accept("separator");
+});
+lexer.rule(/\}/, (ctx, match) => {
+    ctx.accept("separator");
 });
 lexer.rule(/\/\/[^\r\n]*\r?\n/, (ctx, match) => {
     ctx.ignore();
@@ -37,6 +86,7 @@ function log() {
     lexer.input(cfg);
     lexer.debug(true);
     lexer.tokens().forEach((token) => {
+        console.log(token.toString());
         outstr += (token.toString() + "\n");
     });
     output.innerText = outstr;
