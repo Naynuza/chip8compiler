@@ -1,5 +1,9 @@
 let instructions = {
     clearScreen() {
-        
-    }
+
+    },
+    skip() {
+
+    },
+    
 }

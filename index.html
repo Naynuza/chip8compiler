@@ -7,9 +7,11 @@
     <title>Chip-8 Editor and Compiler</title>
 </head>
 <body>
-    <div id="editor" style="height: 600px; width: 800px">#foo {
+    <!--div id="editor" style="height: 600px; width: 800px">#foo {
     call blah
-}</div>
+}</div-->
+    <input type="file" id="myFile" multiple size="50" onchange="getFile()">
+    <p id="demo"></p>
     <button onclick="log()">log text</button>
     <div id="output"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.6/ace.js" integrity="sha256-CVkji/u32aj2TeC+D13f7scFSIfphw2pmu4LaKWMSY8=" crossorigin="anonymous"></script>
