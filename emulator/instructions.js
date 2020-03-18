@@ -1,9 +1,0 @@
-let instructions = {
-    clearScreen() {
-
-    },
-    skip() {
-
-    },
-    
-}

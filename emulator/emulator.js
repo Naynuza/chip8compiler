@@ -1,4 +1,7 @@
 // Emulator variables
+let xShift = 8;
+let yShift = 4;
+
 let opcode;
 let memory = new Array(4096);
 let V = new Array(16);
@@ -71,6 +74,7 @@ class chip8 {
     emulateCycle() {
         // Fetch opcode
         opcode = memory[pc] << 8 | memory[pc + 1];
+        //console.log("Ran opcode: 0x" + opcode.toString(16) + " at address: " + pc.toString(16));
 
         // Decode opcode
         switch(opcode & 0xF000) {
@@ -108,7 +112,7 @@ class chip8 {
                 break;
             case 0x3000:
                 // Skip if 0x0X00<Vx> = 0x00XX<byte>
-                if (getVx() == opcode&0xFF) {
+                if (getVx() == (opcode&0x00FF)) {
                     pc += 4;
                 } else {
                     pc += 2;
@@ -116,7 +120,7 @@ class chip8 {
                 break;
             case 0x4000:
                 // Skip if 0x0X00<Vx> != 0x00XX<byte>
-                if (getVx() != opcode&0xFF) {
+                if (getVx() != (opcode&0x00FF)) {
                     pc += 4;
                 } else {
                     pc += 2;
@@ -124,7 +128,7 @@ class chip8 {
                 break;
             case 0x5000:
                 // Skip if 0x0X00<Vx> != 0x00X0<Vy>
-                if (getVx() == getVy()) {
+                if (getVx() != getVy()) {
                     pc += 4;
                 } else {
                     pc += 2;
@@ -132,12 +136,20 @@ class chip8 {
                 break;
             case 0x6000:
                 // Load 0x00XX<byte> into 0x0X00<Vx>
-                setVx(opcode&0xFF);
+                //console.log("0x" + opcode.toString(16) + ": V" + ((opcode&0x0F00)>>xShift).toString(16) + " = " + getVx());
+                //console.log(V);
+                setVx(opcode&0x00FF);
+                //console.log("0x" + opcode.toString(16) + ": V" + ((opcode&0x0F00)>>xShift).toString(16) + " = " + getVx());
+                //console.log(V);
                 pc += 2;
                 break;
             case 0x7000:
                 // Vx = 0x0X00<Vx> + 0x00XX<byte>
-                setVx(getVx() + opcode&0xFF);
+                //console.log("0x" + opcode.toString(16) + ": V" + ((opcode&0x0F00)>>xShift).toString(16) + " = " + getVx());
+                //console.log(V);
+                setVx(getVx() + opcode&0x00FF);
+                //console.log("0x" + opcode.toString(16) + ": V" + ((opcode&0x0F00)>>xShift).toString(16) + " = " + getVx());
+                //console.log(V);
                 pc += 2;
                 break;
             case 0x8000:
@@ -172,16 +184,19 @@ class chip8 {
                         break;
                     case 0x0005:
                         // 0x0X00<Vx> -= 0x00X0<Vy>
-                        if (getVy() > getVx())
+                        //console.log(getVx() + ", " + getVy());
+                        if (getVy() > getVx()) {
+                            //console.log("carrying");
                             V[0xF] = 1; //carry
-                        else
+                        } else {
                             V[0xF] = 0;
+                        }
                         setVx(getVx() - getVy());
                         pc += 2;
                         break;
                     case 0x0006:
                         V[0xF] = getVx() & 0x1;
-                        V[(opcode&0x0F00)>>>2] >>= 1;
+                        V[(opcode&0x0F00)>>xShift] >>= 1;
                         pc += 2;
                         break;
                     case 0x0007:
@@ -194,8 +209,8 @@ class chip8 {
                         pc += 2;
                         break;
                     case 0x000E:
-                        V[0xF] = getVx()>>>7;
-                        V[(opcode&0x0F00)>>>2] <<= 1;
+                        V[0xF] = getVx()>>7;
+                        V[(opcode&0x0F00)>>xShift] <<= 1;
                         pc += 2;
                         break;
                     default:
@@ -225,13 +240,15 @@ class chip8 {
                 let height = opcode & 0x000F;
                 let pixel;
 
+                //console.log(`x: ${x}, y: ${y}, height: ${height}, pixel: ${pixel}`);
+
                 V[0xF] = 0;
                 for (let yline = 0; yline < height; yline++) {
                     pixel = memory[I + yline];
                     for (let xline = 0; xline < 8; xline++) {
-                        if ((pixel & (0x80 >>> xline)) != 0) {
+                        if ((pixel & (0x80 >> xline)) != 0) {
                             if (gfx[(x + xline + ((y + yline) * 64))] == 1) {
-                                V[0xF] = 1
+                                V[0xF] = 1;
                             }
                             gfx[x + xline + ((y + yline) * 64)] ^= 1;
                         }
@@ -262,12 +279,12 @@ class chip8 {
                 }
                 break;
             case 0xF000:
-                switch(opcode&0xFF) {
-                    case 0x7:
+                switch(opcode&0x00FF) {
+                    case 0x0007:
                         setVx(delay_timer);
                         pc += 2;
                         break;
-                    case 0xA:
+                    case 0x000A:
                         let key_pressed = false;
 
                         for (let i = 0; i < 16; ++i) {
@@ -283,15 +300,15 @@ class chip8 {
                         
                         pc += 2;
                         break;
-                    case 0x15:
+                    case 0x0015:
                         delay_timer = getVx();
                         pc += 2;
                         break;
-                    case 0x18:
+                    case 0x0018:
                         sound_timer = getVx();
                         pc += 2;
                         break;
-                    case 0x1E:
+                    case 0x001E:
                         if (I + getVx() > 0xFFF)
                             V[0xF] = 1;
                         else
@@ -299,30 +316,30 @@ class chip8 {
                         I += getVx();
                         pc += 2;
                         break;
-                    case 0x29:
+                    case 0x0029:
                         I = getVx() * 0x5;
                         pc += 2;
                         break;
-                    case 0x33:
+                    case 0x0033:
                         memory[I] = getVx() / 100;
                         memory[I + 1] = (getVx() / 10) % 10;
                         memory[I + 2] = getVx() % 10;
                         pc += 2;
                         break;
-                    case 0x55:
-                        for (let i = 0; i < ((opcode&0x0F00)>>>2); ++i) {
+                    case 0x0055:
+                        for (let i = 0; i < ((opcode&0x0F00)>>xShift); ++i) {
                             memory[I + i] = V[i];
                         }
 
-                        I += ((opcode&0x0F00)>>>2) + 1;
+                        I += ((opcode&0x0F00)>>xShift) + 1;
                         pc += 2;
                         break;
-                    case 0x65:
-                        for (let i = 0; i < ((opcode&0x0F00)>>>2); ++i) {
+                    case 0x0065:
+                        for (let i = 0; i < ((opcode&0x0F00)>>xShift); ++i) {
                             V[i] = memory[I + i];
                         }
 
-                        I += ((opcode&0x0F00)>>>2) + 1;
+                        I += ((opcode&0x0F00)>>xShift) + 1;
                         pc += 2;
                         break;
                     default:
@@ -334,8 +351,9 @@ class chip8 {
         }
         
         // Update timers
-        if (delay_timer > 0)
+        if (delay_timer > 0) {
             --delay_timer;
+        }
 
         if (sound_timer > 0) {
             if (sound_timer == 1) {
@@ -343,11 +361,9 @@ class chip8 {
             }
             --sound_timer;
         }
-
-        //console.log("Ran opcode: 0x" + opcode.toString(16) + " at address: " + pc.toString(10));
     }
     load(file) {
-        this.initialize()
+        this.initialize();
         console.log("Loading in ROM file: " + file);
 
         getFile();
@@ -376,16 +392,17 @@ class chip8 {
 }
 
 function getVx() {
-    return V[(opcode & 0x0F00)>>>2];
+    return V[(opcode & 0x0F00)>>xShift];
 }
 function getVy() {
-    return V[(opcode & 0x00F0)>>>1];
+    return V[(opcode & 0x00F0)>>yShift];
 }
 function setVx(value) {
-    V[(opcode & 0x0F00)>>>2] = value;
+    console.log("Putting value 0x" + value.toString(16) + " into V"+((opcode & 0x0F00)>>xShift).toString(16))
+    V[(opcode & 0x0F00)>>xShift] = value;
 }
 function setVy(value) {
-    V[(opcode & 0x00F0)>>>1] = value;
+    V[(opcode & 0x00F0)>>yShift] = value;
 }
 
 function getFile() {
@@ -416,7 +433,7 @@ function setup() {
     createCanvas(640, 320);
     setupGraphics();
     myChip8 = new chip8();
-    myChip8.load();
+    myChip8.load(romfile);
 }
 
 function setupGraphics() {
